@@ -8,7 +8,7 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "🪴 Quartz 4.0",
+    pageTitle: "🎃 Memory",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
@@ -73,7 +73,10 @@ const config: QuartzConfig = {
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],
-    filters: [Plugin.RemoveDrafts()],
+    filters: [
+      Plugin.RemoveDrafts(),
+      Plugin.ExplicitPublish(),
+    ],
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
