@@ -1,4 +1,17 @@
 services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+    container_name: quartz_builder
+    volumes:
+      - ${CONTENT_PATH:-./content}:/app/content
+      - ./public:/app/public
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
   nginx:
     image: nginx:latest
     container_name: quartz_nginx
@@ -8,4 +21,6 @@ services:
     ports:
       - "80:80"
     restart: unless-stopped
-
+    network_mode: "host"
+    depends_on:
+      - builder
