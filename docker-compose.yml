@@ -8,9 +8,13 @@ services:
       - ${CONTENT_PATH:-./content}:/app/content
       - ./public:/app/public
     restart: unless-stopped
-    network_mode: "host"
     environment:
       - CHOKIDAR_USEPOLLING=true
+    healthcheck:
+      test: ["CMD", "sh", "-c", "[ -f /app/public/index.html ]"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   nginx:
     image: nginx:latest
@@ -21,6 +25,6 @@ services:
     ports:
       - "80:80"
     restart: unless-stopped
-    network_mode: "host"
     depends_on:
-      - builder
+      builder:
+        condition: service_healthy
