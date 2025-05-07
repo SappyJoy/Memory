@@ -22,9 +22,31 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./public:/usr/share/nginx/html:ro
+      - certbot_certs:/etc/letsencrypt # Volume for SSL certificates
+      - certbot_webroot:/var/www/certbot # Volume for Certbot challenge files
     ports:
       - "80:80"
+      - "443:443" # Add port 443 for HTTPS
     restart: unless-stopped
     depends_on:
       builder:
         condition: service_healthy
+
+  certbot:
+    image: certbot/certbot
+    container_name: quartz_certbot
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    # Command to try and renew certificates every 12 hours.
+    # If certificates don't exist, it will try to obtain them.
+    # IMPORTANT: For the first run, you might want to run a command to obtain certs explicitly.
+    # See notes below.
+    command: renew --webroot -w /var/www/certbot --quiet --agree-tos --email stponomarevw@gmail.com --no-eff-email --force-renewal
+    # Replace YOUR_EMAIL@example.com with your actual email for Let's Encrypt notifications
+
+volumes:
+  certbot_certs:
+  certbot_webroot:
+  # If your ./public is meant to be persistent and not just built content, consider making it a named volume too
+  # public_data:
